@@ -39,7 +39,7 @@ Po prvi namestitvi, pa tudi na vsake toliko časa, greste v mapo `nadlogar/nadlo
 Če uporabljate Windowse, je drugi ukaz drugačen
 
     git pull
-    venv\Scripts\activate
+  
     pip install -r requirements\local.txt
     python manage.py migrate
 
