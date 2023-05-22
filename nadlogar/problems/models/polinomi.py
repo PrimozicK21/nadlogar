@@ -123,12 +123,8 @@ class IzracunNicelVPrimeruDvojneNicle(Problem):
 class IzracunNicelPolovAsimptotRacionalne(Problem):
     """Problem, v katerem je treba poiskati ničle, pole in asimptoto dane racionalne funkcije."""
 
-    default_instruction = (
-        r"Izračunaj ničle, pole in asimptote dane racionalne funkcije $@dvojna_nicla$."
-    )
-    default_solution = (
-        r"$nicle=@tretja_nicla$, $poli=@cetrta_nicla$, $asimptota=@cetrta_nicla$"
-    )
+    default_instruction = r"Izračunaj ničle, pole in asimptote dane racionalne funkcije $@splosna_oblika_racionalne_funkcije$."
+    default_solution = r"ničle: $@nicle$, poli: $@poli$, asimptota: $y= @asimptota$"
 
     class Meta:
         verbose_name = "Racionalna funkcija / iskanje ničel, polov in enačbe asimptote"
@@ -168,52 +164,67 @@ class IzracunNicelPolovAsimptotRacionalne(Problem):
         return {
             "koeficienti_polinoma_v_stevcu": [p3, p2, p1, 0],
             "koeficienti_polinoma_v_imenovalcu": [q2, q1, q0],
-            "splosna_oblika_racionalne_funkcije": splosna_oblika_racionalne,
+            "splosna_oblika_racionalne_funkcije": sympy.latex(
+                splosna_oblika_racionalne
+            ),
+            "nicle": sympy.latex(izracunaj_nicle_splosne_racionalne(p3, p2, p1)),
+            "poli": sympy.latex(izracunaj_pole_splosne_racionalne(q2, q1, q0)),
+            "asimptota": sympy.latex(
+                izracunaj_enacbo_asimptote(
+                    p3 * x**3 + p2 * x**2 + p1 * x**1,
+                    q2 * x**2 + q1 * x**1 + q0,
+                )
+            ),
         }
 
-    # __NICLE__#########################################################################################################################################################
-    def izracunaj_nicle_splosne_racionalne(p3, p2, p1):
-        """
-        Iz podanih koeficientov kvadratne funkcije izračuna ničli funkcije. Ena ničla pa je vedno enaka x_0 = 0.
-        """
 
-        diskriminanta = diskriminanta_splosne_kvadratne(p3, p2, p1)
-        if diskriminanta >= 0:
-            koren_diskriminante = sympy.sqrt(diskriminanta)
-        else:
-            koren_diskriminante = sympy.sqrt(-diskriminanta) * sympy.I
-        prva_nicla = (-p2 + koren_diskriminante) / (2 * p3)
-        druga_nicla = (-p2 - koren_diskriminante) / (2 * p3)
-        tretja_nicla = 0
-        return {"nicle": (prva_nicla, druga_nicla, tretja_nicla)}
+# __NICLE__#########################################################################################################################################################
+def izracunaj_nicle_splosne_racionalne(p3, p2, p1):
+    """
+    Iz podanih koeficientov kvadratne funkcije izračuna ničli funkcije. Ena ničla pa je vedno enaka x_0 = 0.
+    """
 
-    # __POLI__#########################################################################################################################################################
-    def izracunaj_pole_splosne_racionalne(q2, q1, q0):
-        """
-        Iz podanih koeficientov kvadratne funkcije izračuna ničli funkcije. Ena ničla pa je vedno enaka x_0 = 0.
-        """
+    diskriminanta = diskriminanta_splosne_kvadratne(p3, p2, p1)
+    if diskriminanta >= 0:
+        koren_diskriminante = sympy.sqrt(diskriminanta)
+    else:
+        koren_diskriminante = sympy.sqrt(-diskriminanta) * sympy.I
+    prva_nicla = (-p2 + koren_diskriminante) / (2 * p3)
+    druga_nicla = (-p2 - koren_diskriminante) / (2 * p3)
+    tretja_nicla = 0
+    return (prva_nicla, druga_nicla, tretja_nicla)
 
-        diskriminanta = diskriminanta_splosne_kvadratne(q2, q1, q0)
-        if diskriminanta >= 0:
-            koren_diskriminante = sympy.sqrt(diskriminanta)
-        else:
-            koren_diskriminante = sympy.sqrt(-diskriminanta) * sympy.I
-        prvi_pol = (-q1 + koren_diskriminante) / (2 * q2)
-        drugi_pol = (-q1 - koren_diskriminante) / (2 * q2)
-        return {"poli": (prvi_pol, drugi_pol)}
 
-    # __DISKIMINANTA__#########################################################################################################################################################
-    def diskriminanta_splosne_kvadratne(a, b, c):
-        """
-        Iz podanih koeficientov kvadratne funkcije izračuna diskriminanto.
-        """
-        return b**2 - 4 * c * a
+# __POLI__#########################################################################################################################################################
+def izracunaj_pole_splosne_racionalne(q2, q1, q0):
+    """
+    Iz podanih koeficientov kvadratne funkcije izračuna ničli funkcije. Ena ničla pa je vedno enaka x_0 = 0.
+    """
+
+    diskriminanta = diskriminanta_splosne_kvadratne(q2, q1, q0)
+    if diskriminanta >= 0:
+        koren_diskriminante = sympy.sqrt(diskriminanta)
+    else:
+        koren_diskriminante = sympy.sqrt(-diskriminanta) * sympy.I
+    prvi_pol = (-q1 + koren_diskriminante) / (2 * q2)
+    drugi_pol = (-q1 - koren_diskriminante) / (2 * q2)
+    return (prvi_pol, drugi_pol)
+
+
+# __DISKIMINANTA__#########################################################################################################################################################
+def diskriminanta_splosne_kvadratne(a, b, c):
+    """
+    Iz podanih koeficientov kvadratne funkcije izračuna diskriminanto.
+    """
+    return b**2 - 4 * c * a
 
     # __ASIMPTOTE__#########################################################################################################################################################
-    def izracunaj_enacbo_asimptote(stevec, imenovalec):
-        x = sympy.symbols("x")
-        asimptota, r = sympy.div(stevec, imenovalec, x)
-        return {"asimptota": asimptota}
+
+
+def izracunaj_enacbo_asimptote(stevec, imenovalec):
+    x = sympy.symbols("x")
+    asimptota, r = sympy.div(stevec, imenovalec, x)
+    return asimptota
 
 
 # __TERMINAL__#########################################################################################################################################################
